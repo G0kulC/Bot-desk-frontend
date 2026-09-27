@@ -286,7 +286,12 @@ export function ThreadView({
     </form>
   );
 
-  let lastDay = "";
+  // Day divider before the first message of each IST day.
+  const rows = messages.map((m, i) => ({
+    m,
+    day: dayKey(m.created_at),
+    divider: i === 0 || dayKey(messages[i - 1].created_at) !== dayKey(m.created_at),
+  }));
   return (
     <ChatThread
       header={header}
@@ -296,23 +301,18 @@ export function ThreadView({
       label="Messages"
     >
       {messages.length === 0 && <p className="py-10 text-center text-sm text-ink-2">No messages yet.</p>}
-      {messages.map((m) => {
-        const day = dayKey(m.created_at);
-        const divider = day !== lastDay;
-        lastDay = day;
-        return (
-          <div key={m.id}>
-            {divider && (
-              <div className="my-2 flex justify-center">
-                <span className="rounded-md bg-surface/90 px-2 py-0.5 text-[11px] text-ink-2 shadow-sm">
-                  {day}
-                </span>
-              </div>
-            )}
-            <MessageBubble m={m} />
-          </div>
-        );
-      })}
+      {rows.map(({ m, day, divider }) => (
+        <div key={m.id}>
+          {divider && (
+            <div className="my-2 flex justify-center">
+              <span className="rounded-md bg-surface/90 px-2 py-0.5 text-[11px] text-ink-2 shadow-sm">
+                {day}
+              </span>
+            </div>
+          )}
+          <MessageBubble m={m} />
+        </div>
+      ))}
     </ChatThread>
   );
 }

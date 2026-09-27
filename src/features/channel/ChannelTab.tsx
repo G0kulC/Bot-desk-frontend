@@ -1,9 +1,9 @@
 import { CheckCircle2, Link2, Send, XCircle } from "lucide-react";
-import { useEffect, useState, type FormEvent } from "react";
+import { useState, type FormEvent } from "react";
 import { toast } from "sonner";
 
 import { errorMessage } from "@/api/client";
-import type { ChannelIn, ChannelTest, Client } from "@/api/types";
+import type { Channel, ChannelIn, ChannelTest, Client } from "@/api/types";
 import { useChannel, useSaveChannel, useTestChannel } from "@/api/useChannel";
 import { Button } from "@/components/Button";
 import { CopyButton } from "@/components/CopyButton";
@@ -71,17 +71,23 @@ function SecretField({
 
 export function ChannelTab({ client }: { client: Client }) {
   const channel = useChannel(client.id);
+  if (channel.isLoading) return <Skeleton className="h-96" />;
+  if (channel.error) return <ErrorState error={channel.error} onRetry={() => channel.refetch()} />;
+  // Keyed so a newly created channel starts a fresh form; background refetches never reset edits.
+  return <ChannelEditor key={channel.data?.id ?? "new"} client={client} ch={channel.data ?? null} />;
+}
+
+function ChannelEditor({ client, ch }: { client: Client; ch: Channel | null }) {
   const save = useSaveChannel(client.id);
   const test = useTestChannel(client.id);
   const reduced = usePrefersReducedMotion();
   const provider = client.effective_provider;
-  const ch = channel.data;
 
   const [plain, setPlain] = useState({
-    display_phone: "",
-    meta_phone_number_id: "",
-    meta_waba_id: "",
-    aisensy_project_id: "",
+    display_phone: ch?.display_phone ?? "",
+    meta_phone_number_id: ch?.meta_phone_number_id ?? "",
+    meta_waba_id: ch?.meta_waba_id ?? "",
+    aisensy_project_id: ch?.aisensy_project_id ?? "",
   });
   const [secrets, setSecrets] = useState<Record<SecretKey, string>>({
     meta_access_token: "",
@@ -90,21 +96,6 @@ export function ChannelTab({ client }: { client: Client }) {
   });
   const [dirty, setDirty] = useState(false);
   const [result, setResult] = useState<ChannelTest | null>(null);
-
-  // Load server values unless the user is mid-edit.
-  useEffect(() => {
-    if (!dirty && channel.isSuccess)
-      setPlain({
-        display_phone: ch?.display_phone ?? "",
-        meta_phone_number_id: ch?.meta_phone_number_id ?? "",
-        meta_waba_id: ch?.meta_waba_id ?? "",
-        aisensy_project_id: ch?.aisensy_project_id ?? "",
-      });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ch, channel.isSuccess]);
-
-  if (channel.isLoading) return <Skeleton className="h-96" />;
-  if (channel.error) return <ErrorState error={channel.error} onRetry={() => channel.refetch()} />;
 
   const phoneError =
     plain.display_phone && !normalizePhone(plain.display_phone) ? "Enter a valid phone number" : undefined;
@@ -117,6 +108,7 @@ export function ChannelTab({ client }: { client: Client }) {
       meta_phone_number_id: plain.meta_phone_number_id.trim() || null,
       meta_waba_id: plain.meta_waba_id.trim() || null,
       aisensy_project_id: plain.aisensy_project_id.trim() || null,
+      rotate_channel_token: false,
     };
     // Secrets are sent only when the field was changed.
     (Object.keys(secrets) as SecretKey[]).forEach((k) => {

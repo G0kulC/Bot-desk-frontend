@@ -7,7 +7,6 @@ import { usePrefersReducedMotion } from "@/lib/motion";
  * Magic UI Confetti for small wins (knowledge approved, lead won).
  * Returns [element to render, fire()]. Does nothing when reduced motion is on.
  */
-// eslint-disable-next-line react-refresh/only-export-components
 export function useCelebrate(): [React.ReactNode, () => void] {
   const ref = useRef<ConfettiRef>(null);
   const reduced = usePrefersReducedMotion();
