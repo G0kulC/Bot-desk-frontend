@@ -1,0 +1,164 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+ * Design tokens. Values are HSL channels (so Tailwind can apply opacity: bg-brand/10);
+ * the original hex is in each comment. Light on :root, dark under `.dark` and
+ * `prefers-color-scheme: dark` (unless the user forced light with `.light`).
+ */
+@layer base {
+  :root {
+    --bg: 90 16.7% 95.3%; /* #F3F5F1 */
+    --surface: 0 0% 100%; /* #FFFFFF */
+    --surface-2: 110 15% 92.2%; /* #E9EEE8 */
+    --ink: 165 23.1% 10.2%; /* #14201D */
+    --ink-2: 160 9.1% 32.4%; /* #4B5A55 */
+    --line: 127.5 10.5% 85.1%; /* #D5DDD6 */
+    --brand: 167 70.8% 25.5%; /* #136F5B */
+    --brand-soft: 154.7 37.3% 90%; /* #DCEFE7 */
+    --brand-ink: 0 0% 100%; /* text on brand */
+    --ok: 150.3 61.8% 30.8%; /* #1E7F4F */
+    --warn: 37.8 90.1% 31.8%; /* #9A6408 */
+    --bad: 5.5 58.9% 43.9%; /* #B23A2E */
+    --chat-bg: 38.8 26.2% 87.3%; /* #E7E1D6 */
+    --bubble-in: 0 0% 100%; /* #FFFFFF */
+    --bubble-out: 100 61.8% 86.7%; /* #D6F2C8 */
+    --radius: 0.75rem;
+    color-scheme: light;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not(.light) {
+      --bg: 162.9 20% 6.9%; /* #0E1513 */
+      --surface: 162 18.5% 10.6%; /* #16201D */
+      --surface-2: 160 16.7% 14.1%; /* #1E2A26 */
+      --ink: 150 19% 91.8%; /* #E6EEEA */
+      --ink-2: 157.9 10.7% 65.3%; /* #9DB0A9 */
+      --line: 158.6 14.3% 19.2%; /* #2A3833 */
+      --brand: 162.1 49% 48.4%; /* #3FB894 */
+      --brand-soft: 164.6 43.2% 15.9%; /* #173A31 */
+      --brand-ink: 162.9 20% 6.9%;
+      --ok: 146.5 51.6% 57.8%; /* #5CCB8D */
+      --warn: 39.7 75.5% 63.1%; /* #E8B85A */
+      --bad: 6.3 79.2% 71.8%; /* #F08A7E */
+      --chat-bg: 160 29% 6.1%; /* #0B1411 */
+      --bubble-in: 161.5 17.3% 14.7%; /* #1F2C28 */
+      --bubble-out: 156 43.7% 20.2%; /* #1D4A38 */
+      color-scheme: dark;
+    }
+  }
+
+  .dark {
+    --bg: 162.9 20% 6.9%;
+    --surface: 162 18.5% 10.6%;
+    --surface-2: 160 16.7% 14.1%;
+    --ink: 150 19% 91.8%;
+    --ink-2: 157.9 10.7% 65.3%;
+    --line: 158.6 14.3% 19.2%;
+    --brand: 162.1 49% 48.4%;
+    --brand-soft: 164.6 43.2% 15.9%;
+    --brand-ink: 162.9 20% 6.9%;
+    --ok: 146.5 51.6% 57.8%;
+    --warn: 39.7 75.5% 63.1%;
+    --bad: 6.3 79.2% 71.8%;
+    --chat-bg: 160 29% 6.1%;
+    --bubble-in: 161.5 17.3% 14.7%;
+    --bubble-out: 156 43.7% 20.2%;
+    color-scheme: dark;
+  }
+
+  /* shadcn-style aliases (Magic UI components use these names). */
+  :root,
+  .dark {
+    --background: var(--bg);
+    --foreground: var(--ink);
+    --border: var(--line);
+    --input: var(--line);
+    --ring: var(--brand);
+    --primary: var(--brand);
+    --primary-foreground: var(--brand-ink);
+    --secondary: var(--surface-2);
+    --secondary-foreground: var(--ink);
+    --muted: var(--surface-2);
+    --muted-foreground: var(--ink-2);
+    --accent: var(--brand-soft);
+    --accent-foreground: var(--ink);
+    --card: var(--surface);
+    --card-foreground: var(--ink);
+    --destructive: var(--bad);
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    @apply min-h-dvh bg-bg font-sans text-[15px] leading-relaxed text-ink antialiased;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    @apply font-display tracking-tight;
+  }
+
+  :focus-visible {
+    outline: 2px solid hsl(var(--brand));
+    outline-offset: 2px;
+  }
+
+  ::selection {
+    background: hsl(var(--brand) / 0.25);
+  }
+
+  input[type="date"]::-webkit-calendar-picker-indicator,
+  input[type="month"]::-webkit-calendar-picker-indicator {
+    opacity: 0.7;
+  }
+  .dark input[type="date"]::-webkit-calendar-picker-indicator,
+  .dark input[type="month"]::-webkit-calendar-picker-indicator {
+    filter: invert(1);
+  }
+}
+
+@layer components {
+  .card {
+    @apply rounded-lg border border-line bg-surface;
+  }
+  .field-input {
+    @apply w-full rounded-md border border-line bg-surface px-3 py-2 text-[15px] text-ink placeholder:text-ink-2/60 focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/25 disabled:cursor-not-allowed disabled:opacity-60 aria-[invalid=true]:border-bad;
+  }
+  .chat-wallpaper {
+    background-color: hsl(var(--chat-bg));
+    background-image: radial-gradient(hsl(var(--ink) / 0.06) 1px, transparent 1px);
+    background-size: 18px 18px;
+  }
+}
+
+@layer utilities {
+  .tnum {
+    font-variant-numeric: tabular-nums;
+  }
+  .scrollbar-none {
+    scrollbar-width: none;
+  }
+  .scrollbar-none::-webkit-scrollbar {
+    display: none;
+  }
+  .pb-safe {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

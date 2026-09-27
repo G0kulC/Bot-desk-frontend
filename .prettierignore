@@ -1,0 +1,7 @@
+dist
+node_modules
+coverage
+src/api/schema.d.ts
+src/components/magicui
+openapi.json
+package-lock.json
